@@ -34,9 +34,9 @@ impl TaskManager {
 
     /// Adds a new undone task based on its textual description and returns
     /// the identifier assigned to it.
-    pub fn add(&mut self, text: String) -> usize {
+    pub fn add(&mut self, text: Option<String>) -> usize {
         let id = self.next_id;
-        let task = Task { text: text, done: false };
+        let task = Task { text: text.unwrap(), done: false };
         if self.tasks.insert(id, task).is_some() {
             panic!("Overwrote task; did next_id wrap?");
         }
@@ -76,3 +76,12 @@ impl TaskManager {
         self.tasks.remove(&id).map_or(Err("No such task"), |_| Ok(()))
     }
 }
+
+//curl -X POST -H "Content-Type: application/json" -d '"J'ai ça a faire"' http://localhost:1234/task
+//curl -X POST -H "Content-Type: application/json" -d '"Et encore ça"' http://localhost:1234/task
+//curl -X POST -H "Content-Type: application/json" -d '"Et sa graaand mere"' http://localhost:1234/task
+//curl -X GET http://localhost:1234/task/1
+//curl -X GET http://localhost:1234/task/1
+//curl -X GET http://localhost:1234/task
+//curl -X UPDATE -H "Content-Type: application/json" -d '{"done": true}' http://localhost:1234/task/0
+//curl -X DELETE http://localhost:1234/task/1

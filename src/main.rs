@@ -46,9 +46,9 @@ fn route_request(request: &rouille::Request, task_manager: &Mutex<TaskManager>)
         },
 
         (POST) ["/task"] => {
-            let body: String =
+            let body: UpdateTaskRequest =
                 try_or_400!(rouille::input::json_input(request));
-            let id = task_manager.add(body);
+            let id = task_manager.add(body.text);
             rouille::Response::json(&format!("/task/{}", id))
         },
 
@@ -85,3 +85,11 @@ fn main() {
     rouille::start_server(
         "localhost:1234", move |request| route_request(request, &task_manager))
 }
+
+//curl -X POST -H "Content-Type: application/json" -d '"HEE REVEILLE TOII ICI C EST LES CITES DE FRANCE NARVALO"' http://localhost:1234/task
+//curl -X POST -H "Content-Type: application/json" -d '"HEE LAISSEZ MOI DORMIR ZEBI"' http://localhost:1234/task
+//curl -X POST -H "Content-Type: application/json" -d '"BASSEM IL S EST FAIT ENCULER"' http://localhost:1234/task
+//curl -X GET http://localhost:1234/task/
+//curl -X GET http://localhost:1234/task/1
+//curl -X UPDATE -H "Content-Type: application/json" -d '{"done": true}' http://localhost:1234/task/0
+//curl -X DELETE http://localhost:1234/task/
