@@ -1,39 +1,26 @@
 use std::collections::HashMap;
 use std::result::Result;
 
-/// Definition of a single task.
 pub struct Task {
-    /// The description of the task.
     pub text: String,
 
-    /// Whether the task is complete or not.
     pub done: bool,
 }
 
-/// Container of tasks.
-///
-/// Tasks are identified by an integer and each points to a separate `Task`
-/// object that describes that individual task.
-///
-/// The task manager is not thread-safe.
 pub struct TaskManager {
     tasks: HashMap<usize, Task>,
     next_id: usize,
 }
 
 impl TaskManager {
-    /// Creates a new task manager with no tasks.
     pub fn new() -> Self {
         Self { tasks: HashMap::new(), next_id: 0 }
     }
 
-    /// Returns all tasks.
     pub fn all(&self) -> &HashMap<usize, Task> {
         &self.tasks
     }
 
-    /// Adds a new undone task based on its textual description and returns
-    /// the identifier assigned to it.
     pub fn add(&mut self, text: Option<String>) -> usize {
         let id = self.next_id;
         let task = Task { text: text.unwrap(), done: false };
@@ -44,16 +31,10 @@ impl TaskManager {
         id
     }
 
-    /// Returns the task corresponding to the identifier `id` or an error
-    /// message if not found.
     pub fn get(&mut self, id: usize) -> Result<&Task, &'static str> {
         self.tasks.get(&id).ok_or("No such task")
     }
 
-    /// Updates the task corresponding to the identifier `id` with a new
-    /// text and status.  If any parameter is set to `None`, the corresponding
-    /// field in the task is left unmodified.  Returns an error message if the
-    /// task is not found.
     pub fn set(&mut self, id: usize, text: Option<String>, done: Option<bool>)
                -> Result<(), &'static str> {
 
@@ -68,20 +49,10 @@ impl TaskManager {
                 }
                 Ok(())
             })
+            
     }
 
-    /// Deletes the task corresponding to the identifier `id` or an error
-    /// message if not found.
     pub fn delete(&mut self, id: usize) -> Result<(), &'static str> {
         self.tasks.remove(&id).map_or(Err("No such task"), |_| Ok(()))
     }
 }
-
-//curl -X POST -H "Content-Type: application/json" -d '"J'ai ça a faire"' http://localhost:1234/task
-//curl -X POST -H "Content-Type: application/json" -d '"Et encore ça"' http://localhost:1234/task
-//curl -X POST -H "Content-Type: application/json" -d '"Et sa graaand mere"' http://localhost:1234/task
-//curl -X GET http://localhost:1234/task/1
-//curl -X GET http://localhost:1234/task/1
-//curl -X GET http://localhost:1234/task
-//curl -X UPDATE -H "Content-Type: application/json" -d '{"done": true}' http://localhost:1234/task/0
-//curl -X DELETE http://localhost:1234/task/1
